@@ -1,1 +1,1 @@
-Encrypt and decrypt strings or files
+Encrypt and decrypt strings
