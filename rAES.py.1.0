@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-# _*_coding: utf-8_*_
+# _*_coding:utf-8_*_
 # Auth by raysuen
-#version 1.5
+#version 1.0
 #important: run "pip install pycryptodomex" to install pycryptodomex model
 
 
 
 from Cryptodome.Cipher import AES
 from binascii import b2a_hex, a2b_hex
-from binascii import b2a_base64,a2b_base64
 import sys,re
 
 AES_LENGTH = 16
@@ -33,7 +32,7 @@ class prpcrypt():
             key += ' '
         return key
 
-    def encrypt_hex(self, text):
+    def encrypt(self, text):
 
         # 这里密钥key 长度必须为16（AES-128）、24（AES-192）、或32（AES-256）Bytes 长度.目前AES-128足够用
         # 加密的字符需要转换为bytes
@@ -42,27 +41,11 @@ class prpcrypt():
         # 因为AES加密时候得到的字符串不一定是ascii字符集的，输出到终端或者保存时候可能存在问题
         # 所以这里统一把加密后的字符串转化为16进制字符串
         return b2a_hex(self.ciphertext)
-        # return b2a_base64(self.ciphertext)
+
         # 解密后，去掉补足的空格用strip() 去掉
 
-    def encrypt_base64(self, text):
-
-        # 这里密钥key 长度必须为16（AES-128）、24（AES-192）、或32（AES-256）Bytes 长度.目前AES-128足够用
-        # 加密的字符需要转换为bytes
-        # print(self.pad(text))
-        self.ciphertext = self.cryptor.encrypt(self.pad(text).encode())
-        # 因为AES加密时候得到的字符串不一定是ascii字符集的，输出到终端或者保存时候可能存在问题
-        # 所以这里统一把加密后的字符串转化为16进制字符串
-        # return b2a_hex(self.ciphertext)
-        return b2a_base64(self.ciphertext)
-        # 解密后，去掉补足的空格用strip() 去掉
-
-    def decrypt_hex(self, text):
+    def decrypt(self, text):
         plain_text = self.cryptor.decrypt(a2b_hex(text)).decode()
-        return plain_text.rstrip(' ')
-
-    def decrypt_base64(self, text):
-        plain_text = self.cryptor.decrypt(a2b_base64(text)).decode()
         return plain_text.rstrip(' ')
 
 
@@ -72,19 +55,17 @@ def func_help():
         rAES    --encrypt or decrypt a string 
     SYNOPSIS:
         rAES [-d|-e] -k key -s string
-        rAES [-d|-e] -k key -s string -base64
     DESCRIPTION:
         -d      Decryption,You can't use -d and -e at the same time.
         -e      Encrpytion,You can't use -d and -e at the same time.
         -k      Key,according to the key to encrypt or decrypt.
         -s      Spicify a string to encryption or decryption.
-        -base64 Use base64 Encoding.
+
     """)
 
 if __name__ == '__main__':
     rkey = None
     rstring = None
-    base64 = False
     encry = 0
     decry = 0
     if len(sys.argv) > 1:
@@ -115,22 +96,17 @@ if __name__ == '__main__':
                 encry = 1
             elif sys.argv[i] == "-d":
                 decry = 1
-            elif sys.argv[i] == "-base64" or sys.argv[i] == "-BASE64":
-                base64 = True
             i = i + 1
         if  rkey == None or rstring == None:
             print("Pleas give values for -k or -s.")
             exit(3)
         elif len(rkey) > 0 and len(rstring) > 0:
             pc = prpcrypt(rkey)  # 初始化密钥
-            if encry == 1 and base64 == False:
-                print(pc.encrypt_hex(rstring).decode())
-            elif encry == 1 and base64 == True:
-                print(pc.encrypt_base64(rstring).decode())
-            elif decry == 1 and base64 == False:
-                print(pc.decrypt_hex(rstring))
-            elif decry == 1 and base64 == True:
-                print(pc.decrypt_base64(rstring))
+            if encry == 1:
+                print(pc.encrypt(rstring))
+
+            elif decry == 1:
+                print(pc.decrypt(rstring))
             else:
                 print("You must use -d or -e.")
                 exit(4)
