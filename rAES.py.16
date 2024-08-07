@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # _*_coding: utf-8_*_
 # Auth by raysuen
-#version 1.8
+#version 1.6
 #important: run "pip install pycryptodomex" to install pycryptodomex model
 
 
@@ -10,7 +10,6 @@ from Cryptodome.Cipher import AES
 from binascii import b2a_hex, a2b_hex
 from binascii import b2a_base64,a2b_base64
 import sys,re
-from _ast import Try
 
 AES_LENGTH = 16
 
@@ -29,10 +28,6 @@ class prpcrypt():
         self.key = key
         self.mode = AES.MODE_ECB
         self.cryptor = AES.new(self.pad_key(self.key).encode(), self.mode)
-    
-    def getKey(self):
-        return self.key
-    
         
     # 加密函数，如果text不是16的倍数【加密文本text必须为16的倍数！】，那就补足为16的倍数
     # 加密内容需要长达16位字符，所以进行空格拼接
@@ -72,23 +67,12 @@ class prpcrypt():
         # 解密后，去掉补足的空格用strip() 去掉
 
     def decrypt_hex(self, text):
-        try:
-            plain_text = self.cryptor.decrypt(a2b_hex(text)).decode()
-            return plain_text.rstrip(' ')
-        except UnicodeDecodeError as e:
-            print("Please enter the correct key")
-        except Exception as e:
-            print(e)
-            
+        plain_text = self.cryptor.decrypt(a2b_hex(text)).decode()
+        return plain_text.rstrip(' ')
+
     def decrypt_base64(self, text):
-        try:
-            plain_text = self.cryptor.decrypt(a2b_base64(text)).decode()
-            return plain_text.rstrip(' ')
-        except UnicodeDecodeError as e:
-            print("Please enter the correct key")
-        except Exception as e:
-            print(e)
-        
+        plain_text = self.cryptor.decrypt(a2b_base64(text)).decode()
+        return plain_text.rstrip(' ')
 
 
 def func_help():
